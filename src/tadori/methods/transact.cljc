@@ -16,6 +16,7 @@
 
   Network and codec authority are explicit host dependencies."
   (:require [clojure.java.io :as io]
+            [clojure.string :as str]
             [cheshire.core :as json]
             [tadori.methods.ingest :as ingest]))
 
@@ -23,14 +24,70 @@
 (def nsid-datomic-transact "com.etzhayyim.apps.kotoba.datomic.transact")
 (def nsid-datomic-datoms "com.etzhayyim.apps.kotoba.datomic.datoms")
 
+;; ── internal-trust header (ADR-2608124000) ────────────────────────────────────
+;; kotoba-server's `require_internal_trust` gate compares this header against its
+;; own KOTOBA_INTERNAL_SECRET. That variable is unset across the murakumo fleet,
+;; so the gate returns success and the header is never read — sending it TODAY is
+;; a complete no-op. That is precisely why it is safe to ship now: every caller
+;; must demonstrably send it BEFORE the server side can be armed, and arming the
+;; server first would break every caller at once.
+;;
+;; We read the SAME variable name the server and the Cloudflare gateway read, so
+;; arming the fleet later is one variable rather than one per actor. The value is
+;; only ever read from the environment — never minted, never defaulted.
+;;
+;; When it is unconfigured we OMIT the header, but never SILENTLY: a one-shot
+;; stderr warning fires on the live path, and the push result carries
+;; :internal-trust so a fleet sweep can see the gap as data instead of as a log
+;; line nobody reads. Silent omission is the shape that let an unauthenticated
+;; fleet look healthy in the first place.
+;;
+;; NOTE: this namespace has NO host allowlist -- `base-url` is whatever the
+;; operator passes. The trust header is therefore attached to whatever host the
+;; operator named, exactly as the Authorization bearer already is. Adding an
+;; allowlist is a separate change and is NOT made here.
+(def internal-trust-header "x-internal-trust")
+(def internal-trust-env "KOTOBA_INTERNAL_SECRET")
+
+#?(:clj
+   (defn internal-trust
+     "The configured internal-trust secret, or nil when unset/blank. Environment
+     only — this function never mints or defaults a value."
+     []
+     (let [v (System/getenv internal-trust-env)]
+       (when-not (str/blank? v) v))))
+
+#?(:clj (def ^:private internal-trust-warned? (atom false)))
+
+#?(:clj
+   (defn internal-trust-status
+     "`:configured` | `:unconfigured` — the machine-readable half of the warning."
+     []
+     (if (internal-trust) :configured :unconfigured)))
+
+#?(:clj
+   (defn warn-unconfigured-internal-trust!
+     "Announce ONCE per process that this push carries no internal-trust header."
+     []
+     (when (compare-and-set! internal-trust-warned? false true)
+       (binding [*out* *err*]
+         (println (str "WARN tadori.methods.transact: " internal-trust-env " is unset — requests carry NO "
+                       internal-trust-header " header. Harmless while kotoba-server's"
+                       " require_internal_trust gate is disabled fleet-wide"
+                       " (ADR-2608124000); it becomes a hard rejection the moment"
+                       " that gate is armed."))))))
+
 (defn http-post
   "POST JSON through an explicitly granted request capability."
   [request-fn url body token]
   (when-not (fn? request-fn)
     (throw (ex-info "tadori live transact requires an explicit HTTP request capability"
                     {:capability :http-request})))
-  (let [headers (cond-> {"Content-Type" "application/json"}
-                  token (assoc "Authorization" (str "Bearer " token)))
+  (let [trust (internal-trust)
+        _ (when-not trust (warn-unconfigured-internal-trust!))
+        headers (cond-> {"Content-Type" "application/json"}
+                  token (assoc "Authorization" (str "Bearer " token))
+                  trust (assoc internal-trust-header trust))
         resp (request-fn {:method :post :uri url :headers headers
                           :body (json/generate-string body) :throw false :timeout 30000})
         raw (or (not-empty (:body resp)) "{}")]
