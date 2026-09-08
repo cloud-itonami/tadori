@@ -6,7 +6,7 @@
   scaffolds + lexicon JSONs and do not read the manifest)."
   (:require [clojure.test :refer [deftest is run-tests]]
             [clojure.set :as set]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.edn :as edn]
             [cheshire.core :as json]))
 

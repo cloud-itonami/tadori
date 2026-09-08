@@ -9,7 +9,7 @@
   renderer (edn-val / tx-to-edn), the subset EDN reader (read-log-string), head-cid + verify-chain
   over an in-memory tx list. OMITTED (IO leg, not ported): append-tx / disk read_log / head_cid /
   LOG_DEFAULT path ops, and autorun.py (the live heartbeat)."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def counters
   "The 9 silenTadoriReview zero-counters (ADR-2605301400 §D1). Python COUNTERS tuple."

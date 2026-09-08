@@ -7,7 +7,7 @@
   ETH EIP-55 keccak-256) needs primitives babashka's stdlib does not ship (keccak-256 ≠
   JVM SHA3-256). This module does STRUCTURAL validation (prefix / charset / length) which
   reliably rejects malformed addresses; full checksum verification is the operator/live leg."
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def ^:private eth-re #"(?i)0x[0-9a-f]{40}")
 (def ^:private btc-base58-re #"[13][1-9A-HJ-NP-Za-km-z]{25,39}")   ;; P2PKH(1) / P2SH(3)
@@ -47,4 +47,4 @@
   "Canonical form for keying: ETH → lowercase 0x…; BTC → as-is (case-significant)."
   [chain a]
   (let [s (str a)]
-    (if (valid-eth? s) (str/lower-case s) s)))
+    (if (valid-eth? s) (str/lower s) s)))

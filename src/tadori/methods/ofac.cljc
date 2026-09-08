@@ -13,7 +13,7 @@
 
   Pure (parse + map). Depends only on clojure.data.xml (babashka built-in) + risk.cljc."
   (:require [clojure.data.xml :as xml]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [tadori.methods.address :as addr]
             [tadori.methods.risk :as risk]))
 
@@ -62,7 +62,7 @@
           (fn [id]
             (let [id-type (first-text id "idType")]
               (when (and id-type (str/starts-with? id-type dca-prefix))
-                (let [sym (-> id-type (str/split #"-") last str/trim str/upper-case)]
+                (let [sym (-> id-type (str/split #"-") last str/trim str/upper)]
                   {:address (first-text id "idNumber")
                    :symbol sym
                    :chain (get symbol->chain sym :unknown)

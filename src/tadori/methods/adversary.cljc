@@ -21,7 +21,7 @@
       Force is separated to the 1 SBT = 1 vote Transparent-Force path.
 
   Pure (no I/O)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.datom :as kd]
             [tadori.methods.address :as addr]))
 

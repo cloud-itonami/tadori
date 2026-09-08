@@ -8,7 +8,7 @@
   flag + case-id (consent/authorization anchor) survive to the Datom log; the live writer
   re-reads every record kind."
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [tadori.methods.ingest :as ingest]
             [tadori.methods.transact :as transact]))

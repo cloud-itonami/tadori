@@ -1,7 +1,7 @@
 (ns tadori.tests.malak-test
   "tadori 辿 — malak → tadori traceReport seam invariants. ADR-2605301400 §D3 (T1).
   tadori re-derives (SoR), G3 active-case, G4 external-not-SoR, G6 PII-encrypted, provenance."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [tadori.methods.case-intake :as case]
             [tadori.methods.malak-ingest :as malak]))

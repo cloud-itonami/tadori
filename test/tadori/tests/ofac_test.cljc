@@ -1,7 +1,7 @@
 (ns tadori.tests.ofac-test
   "tadori 辿 — OFAC SDN digital-currency-address parse + attributed sanctions ingest.
   ADR-2605301400 §D3. Public primary-source (G4 SoR), non-adjudicating (asserter ofac-sdn)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [tadori.methods.ofac :as ofac]))
 

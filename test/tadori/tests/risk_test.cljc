@@ -3,7 +3,7 @@
   ADR-2605301400. Doctrine test-bound: non-adjudicating (attributed), G4 SoR, G6/G10 no-deanon,
   reciprocal/transparent, append-only 永久記憶."
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [kotoba.datom :as kd]
             [tadori.methods.address :as addr]

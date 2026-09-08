@@ -14,7 +14,7 @@
     Address-level only here — person-linkage is the ENCRYPTED, case-gated attribution edge (G6).
 
   Pure (no I/O). Live ingest of real public lists is the operator-gated leg (methods/transact)."
-  (:require [kotoba.datom :as kd]
+  (:require [kotoba.lang.text] [kotoba.datom :as kd]
             [tadori.methods.address :as addr]))
 
 (def risk-classes
@@ -37,7 +37,7 @@
     (throw (risk-error (str "invalid " (name (or chain :unknown)) " address: " (pr-str address)))))
   (when-not (contains? risk-classes (keyword (name (or risk-class :high-risk))))
     (throw (risk-error (str "risk-class must be a disclosed class; got " (pr-str risk-class)))))
-  (when (clojure.string/blank? (str asserter))
+  (when (kotoba.lang.text/blank? (str asserter))
     (throw (risk-error "G7 non-adjudicating: a risk label needs an ASSERTER (who listed it) — tadori never self-asserts")))
   (when (and (contains? vendor-compat (keyword (str (name (or vendor-family :none)))))
              (= (keyword (name (or source-role :feature-flagged-input))) :system-of-record))

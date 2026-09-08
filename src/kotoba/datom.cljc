@@ -14,7 +14,7 @@
   sha-256 (JVM/babashka MessageDigest; other hosts bind *sha256-hex*) and the
   file I/O at the append/read edge (kotoba-clj WASM hosts route these through
   kqe-assert!/kqe-get-objects instead)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             #?(:clj [clojure.edn :as edn]
                :cljs [cljs.reader :as edn])
             #?(:clj [clojure.java.io :as io])))

@@ -13,7 +13,7 @@
   a case cannot be opened without committing to an on-chain-monitorable audit trail.
 
   Pure (no I/O). The caller supplies as-of (no wall clock)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.datom :as kd]))
 
 (def phases #{0 1})   ;; 0 = dry-run (no case), 1 = live (active authorized case)

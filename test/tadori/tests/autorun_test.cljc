@@ -13,7 +13,7 @@
     - a not-gate-clean corpus (vendor system-of-record) is rejected by validation;
     - it does NO external I/O."
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [cheshire.core :as json]
             [kotoba.datom :as kd]

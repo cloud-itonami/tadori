@@ -2,7 +2,7 @@
   "tadori 辿 — case-anchored tracing + clustering + onion + attribution invariants.
   ADR-2605301400. Activates cells case_intake / tx_trace / address_label /
   attribution_join (Phase-0, synthetic). Constitutional gates are test-bound."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [tadori.methods.attribution :as attr]
             [tadori.methods.case-intake :as case]
