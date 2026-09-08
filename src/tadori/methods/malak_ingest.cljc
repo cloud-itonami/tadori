@@ -20,7 +20,7 @@
       never a verdict or an enforcement action.
 
   Pure (no I/O). The live transact is the operator+case-gated edge (methods/transact)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.datom :as kd]
             [tadori.methods.attribution :as attr]
             [tadori.methods.case-intake :as case]

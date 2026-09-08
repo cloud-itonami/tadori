@@ -18,7 +18,7 @@
   (see tadori.methods.attribution), not a de-anonymization.
 
   Pure (no I/O, no Tor, no network)."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.datom :as kd]))
 
 (def onion-classes

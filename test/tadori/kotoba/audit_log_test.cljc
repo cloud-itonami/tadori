@@ -4,7 +4,7 @@
   output, byte-for-byte verified), make-tx, and the EDN render → read-back → verify-chain round-trip
   (intact + tamper-detected)."
   (:require [clojure.test :refer [deftest is]]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [tadori.kotoba.audit-log :as a]))
 
 (defn- clean-review []

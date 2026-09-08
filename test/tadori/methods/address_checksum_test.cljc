@@ -10,7 +10,7 @@
   addresses AND locks the honest limit: a case-corrupted (but still mixed-case) address still reads
   as 'carrying a checksum' — presence ≠ correctness, so nobody mistakes this for verification."
   (:require [tadori.methods.address :as addr]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is run-tests]]))
 
 (def ^:private eip55-canonical
@@ -27,12 +27,12 @@
 
 (deftest all-lower-and-all-upper-carry-no-checksum
   (doseq [a eip55-canonical]
-    (is (not (addr/eth-checksummed? (str/lower-case a)))
+    (is (not (addr/eth-checksummed? (str/lower a)))
         "an all-lowercase address carries no checksum")
-    (is (not (addr/eth-checksummed? (str "0x" (str/upper-case (subs a 2)))))
+    (is (not (addr/eth-checksummed? (str "0x" (str/upper (subs a 2)))))
         "an all-uppercase address carries no checksum"))
   ;; …yet both are still STRUCTURALLY valid — un-checksummed ≠ invalid
-  (is (addr/valid-eth? (str/lower-case (first eip55-canonical)))
+  (is (addr/valid-eth? (str/lower (first eip55-canonical)))
       "an all-lowercase address is still a valid address"))
 
 (deftest malformed-inputs-are-not-checksummed

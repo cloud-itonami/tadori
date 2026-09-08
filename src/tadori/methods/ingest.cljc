@@ -21,7 +21,7 @@
 
   ValidationError is an ex-info carrying {:tadori/error :validation}. Stdlib +
   cheshire (babashka built-in) only; deterministic; NO external I/O."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.datom :as kd]
             #?(:clj [cheshire.core :as json])))
 

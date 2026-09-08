@@ -16,7 +16,7 @@
 
   Network and codec authority are explicit host dependencies."
   (:require [clojure.java.io :as io]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [cheshire.core :as json]
             [tadori.methods.ingest :as ingest]))
 
