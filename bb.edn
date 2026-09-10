@@ -3,6 +3,6 @@
  {test {:doc "Run every standalone tadori test namespace"
         :task (exec 'tadori.test-runner/-main)}
   audit {:doc "Parse canonical EDN and enforce repository artifact boundaries"
-         :task (shell "bb scripts/audit.clj")}
+         :task (shell "bb scripts/audit.kotoba")}
   ingest {:doc "Validate or transact a staged threat-intel seed"
           :task (apply shell "bb -m tadori.host.http" *command-line-args*)}}}

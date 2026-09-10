@@ -4,7 +4,7 @@
  :kotoba.app/version "0.1.0"
  :kotoba.app/components
  [{:name     "tadori"
-   :src      "src/tadori/methods/mesh.clj"                  ; Clojure default → run + on-kse
+   :src      "src/tadori/methods/mesh.kotoba"                  ; Clojure default → run + on-kse
    :scale    1
    :triggers [{:type :kse :topic "etzhayyim/actor/tadori"}]
    :requires #{:cap/kqe}}]
