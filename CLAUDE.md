@@ -44,12 +44,12 @@ Full attribute list → ADR-2605301400 §D2. Reads use the four `kotoba-kqe` arr
 | `schema/kotoba.edn` | Datomic schema for `tadori.source/*`, `tadori.obs/*`, `tadori.dns/*`, `tadori.ip/*`, and `tadori.indicator/*`. |
 | `wire/seed.threat-intel.jsonl` | Operator-staged JSONL sample for public-archive and SecurityTrails-shaped compatibility records. |
 | `src/tadori/methods/ingest.kotoba` | **(cljc)** JSONL validator (G3 collection-mode/case, G4 vendor-not-SoR, tier-D) + `tx_edn` generator (`record->datoms` / `datoms->tx-edn` — byte-identical to the retired Python) + `readback-checks`. NO I/O. |
-| `src/tadori/methods/transact.kotoba` | **(cljc, operator host edge)** live `com.etzhayyim.apps.kotoba.datomic.transact` writer + session-verify + `datomic.datoms` readback + `-main` CLI (`bb tadori:ingest`). The ONLY tadori ns that does network I/O; holds no key (credential from env). |
-| `bb ingest` | Dry-run/live wrapper for a running kotoba node (drives `bb tadori:ingest`); live runs verify readback. |
+| `src/tadori/methods/transact.kotoba` | **(cljc, operator host edge)** live `com.etzhayyim.apps.kotoba.datomic.transact` writer + session-verify + `datomic.datoms` readback + `-main` CLI (`kbb -M:tadori:ingest`). The ONLY tadori ns that does network I/O; holds no key (credential from env). |
+| `kbb -M:ingest` | Dry-run/live wrapper for a running kotoba node (drives `kbb -M:tadori:ingest`); live runs verify readback. |
 | `src/tadori/methods/audit_log.kotoba` | **(cljc, ADR-2606160842)** Local content-addressed append-only **silenTadoriReview** Datom log (commit-DAG): `review-datoms` + `make-tx`/`append-tx`/`read-log`/`head-cid`/`verify-chain`; `assert-all-clear` (G12 halt). Reuses `kotoba.datom` (CIDs byte-compatible with the old Python). Holds **audit counters ONLY** — never observation/PII/case data. |
 | `src/tadori/methods/autorun.kotoba` | **(cljc)** Autonomous Transparent-Force **self-audit heartbeat** + runnable `-main` (see below). |
 | `test/tadori/tests/autorun.cljc` | **(cljc)** self-audit invariant suite (commit-DAG / G12 / no-I/O / Python-parity CID). |
-| `test/tadori/tests/ingest.cljc` | **(cljc)** ingest gate + EAVT-rendering suite (port of test_invariants.py + test_ingest_threat_intel.py). `bb test:tadori` runs both → 19 tests / 46 assertions. |
+| `test/tadori/tests/ingest.cljc` | **(cljc)** ingest gate + EAVT-rendering suite (port of test_invariants.py + test_ingest_threat_intel.py). `kbb -M:test:tadori` runs both → 19 tests / 46 assertions. |
 
 ### Autonomous on the Murakumo fleet — the Transparent-Force self-audit (ADR-2605301400 §D1)
 
@@ -68,23 +68,23 @@ reaches it (G3/G6/G10 structurally honored). Deterministic / resume-safe; NO ext
 fetch, NO LLM inference, NO enforcement.
 
 ```sh
-bb tadori:autorun 3   # AUTONOMOUS silenTadoriReview self-audit → local kotoba log (cljc; from repo root)
+kbb -M:tadori:autorun 3   # AUTONOMOUS silenTadoriReview self-audit → local kotoba log (cljc; from repo root)
 ```
 
 The loop was ported off Python onto the kotoba Datom-log + clojure.test stack (ADR-2606160842);
 the cljc commit-DAG CIDs are byte-compatible with the retired Python (cross-verified: cljc reads +
 verifies a Python-written log and reproduces its head CID). Fleet cell: `tadori_silen_review`
 (cron 37 * * * *) on `issachar` — see `50-infra/murakumo/fleet.toml`. Live case-anchored ingest
-is the operator host edge `src/tadori/methods/transact.kotoba` (`bb tadori:ingest`, no-server-key — credential
+is the operator host edge `src/tadori/methods/transact.kotoba` (`kbb -M:tadori:ingest`, no-server-key — credential
 from env), behind the operator credential + `TADORI_CASE_ID` gate.
-Invariants guarded by `test/tadori/tests/autorun.cljc` (`bb test:tadori` — commit-DAG verify, tamper-detect,
+Invariants guarded by `test/tadori/tests/autorun.cljc` (`kbb -M:test:tadori` — commit-DAG verify, tamper-detect,
 determinism, append-only, audit-counters-only / no-obs-PII-in-log, **G12 plaintext-PII
 HALT-persists-nothing**, vendor-SoR rejected, no-external-I/O, Python-parity CID).
 
 Dry-run:
 
 ```sh
-bb ingest
+kbb -M:ingest
 ```
 
 Live writes require a running kotoba node plus `KOTOBA_SESSION_POP` or `KOTOBA_TOKEN`.
@@ -118,7 +118,7 @@ Each cutover is dual-write/dual-read → verify set-equality → drop legacy (on
 ## Cells (6) — LOGIC ACTIVATED in cljc (Phase-0); LIVE deploy stays Council-gated
 
 The cell **logic** is now implemented + tested in `src/tadori/methods/*.cljc` and runs in **Phase-0
-(dry-run) over a synthetic authorized case** (`bb tadori:trace`). The **live Pregel deploy
+(dry-run) over a synthetic authorized case** (`kbb -M:tadori:trace`). The **live Pregel deploy
 wrapper** under `40-engine/kotoba/crates/kotoba-kotodama/cells/tadori_*/` stays import-time
 `RuntimeError` until Council Lv6+ ≥3 ratify (G3 authorization-DID), and live data acquisition
 stays operator+case-gated (`src/tadori/methods/transact.kotoba`) — activation = real logic behind the gate,
@@ -135,7 +135,7 @@ not a bypass of it (the ibuki R2 pattern).
 | `silen_tadori_review` | `src/tadori/methods/autorun.kotoba` | autonomous structural zero-counter self-audit | G12 |
 
 ```sh
-bb tadori:trace    # Phase-0 case trace over a SYNTHETIC authorized case (no live data)
+kbb -M:tadori:trace    # Phase-0 case trace over a SYNTHETIC authorized case (no live data)
 ```
 
 ## Continuous watch + risk ingest + watch-the-watchers (相互監視 / 永久記憶 / NEVER-a-throne)
@@ -151,10 +151,10 @@ keep tracking, recording, analyzing malicious / attacking / hidden-influence act
 | `src/tadori/methods/adversary.kotoba` | **watch-the-watchers**: attack / scan / surveil / hidden-influence observations recorded RECIPROCALLY + transparently; reflexive `watch-the-watchers` (the watcher is itself in the ledger) | 相互監視 affirmed; person-identity / de-anon field **unrepresentable** (G1/G10) — only behaviour + address + aggregate are public |
 | `src/tadori/methods/watch.kotoba` | the CONTINUOUS loop (追跡し続ける/記録し続ける/分析し続ける): ingest → score → propagate → concentration → append ONE content-addressed tx to the **append-only public ledger** (永久記憶, tamper-evident commit-DAG) | runs autonomously over PUBLIC indicators (no PII, no case needed); 公開 (external publish) + person-linkage stay operator/Council-gated |
 | `src/tadori/methods/malak_ingest.kotoba` | the **malak → tadori seam** (T1): consolidates a malak `traceReport` (the external pursuit engine's darkweb/onion + wallet-deep-inspect output) into tadori's durable case graph. tadori **RE-DERIVES clusters itself** (SoR), external sources are feature-flagged-only (G4), person findings become encrypted attribution edges (G6), under an active case (G3) | malak = compute / tadori = durable graph: the seam the user flagged (`darkweb は malak`); non-adjudicating, the durable graph is tadori's derivation not malak's assertion |
-| `src/tadori/methods/ofac.kotoba` | **REAL public-data ingest leg**: parse a STAGED OFAC SDN `sdn.xml` (`clojure.data.xml`) → `Digital Currency Address` entries → attributed `:sanctions` risk labels (asserter `ofac-sdn`, **G4 public SoR**, non-adjudicating). `bb tadori:ofac <staged.xml> [as-of]`; the download is the operator-gated leg (G7), the loop does no network I/O | first real-source live leg; OFAC SDN = public primary-source sanctions data (kosatsu pattern) |
+| `src/tadori/methods/ofac.kotoba` | **REAL public-data ingest leg**: parse a STAGED OFAC SDN `sdn.xml` (`clojure.data.xml`) → `Digital Currency Address` entries → attributed `:sanctions` risk labels (asserter `ofac-sdn`, **G4 public SoR**, non-adjudicating). `kbb -M:tadori:ofac <staged.xml> [as-of]`; the download is the operator-gated leg (G7), the loop does no network I/O | first real-source live leg; OFAC SDN = public primary-source sanctions data (kosatsu pattern) |
 
 ```sh
-bb tadori:watch 3   # CONTINUOUS watch loop over a SYNTHETIC batch → append-only public ledger
+kbb -M:tadori:watch 3   # CONTINUOUS watch loop over a SYNTHETIC batch → append-only public ledger
 ```
 
 **公開 (disclosure) boundary — charter-grounded:** what is PUBLIC = disclosed indicators
@@ -219,6 +219,6 @@ nonKotobaStore — any nonzero ⇒ halt + chigiri.disputeMediation). Schemas + m
 - Do not write person/IP/device attribution as plaintext — use `com.etzhayyim.encrypted.*`.
 
 **Live data + fleet + the malak contract:**
-- **OFAC SDN live leg (①)**: `bb tadori:ofac <staged-sdn.xml> [as-of]`. The operator downloads the PUBLIC `sdn.xml` from treasury.gov (G7), tadori parses it offline → attributed `:sanctions` labels. Full-universe / scheduled pull stays operator/Council-gated.
+- **OFAC SDN live leg (①)**: `kbb -M:tadori:ofac <staged-sdn.xml> [as-of]`. The operator downloads the PUBLIC `sdn.xml` from treasury.gov (G7), tadori parses it offline → attributed `:sanctions` labels. Full-universe / scheduled pull stays operator/Council-gated.
 - **Fleet (②)**: `tadori_watch` (continuous risk/adversary ledger) is registered alongside `tadori_silen_review` on `issachar` in `50-infra/murakumo/fleet.edn` — the 永久記憶 watch loop runs on the Murakumo fleet.
 - **malak contract (③)**: `contracts/malak-trace-report.edn` is the EXECUTABLE contract the external **malak** pursuit engine's `traceReport` must satisfy (conformance-tested by `test/tadori/tests/malak_contract.cljc` through the seam). **malak本体 lives in its own repo** — the active darkweb/onion + wallet pursuit is built there; tadori only consolidates its disclosed output. **Active Tor de-anonymization is out of scope everywhere** (onion = public passive indicator).

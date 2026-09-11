@@ -1,6 +1,6 @@
-#!/usr/bin/env bb
+#!/usr/bin/env kbb
 ;; tadori 辿 — validation of eth-checksummed? (EIP-55 checksum-PRESENCE detection).
-;; Run:  bb --classpath 20-actors 20-actors/tadori/methods/test_address_checksum.cljc
+;; Run:  kbb --classpath 20-actors 20-actors/tadori/methods/test_address_checksum.cljc
 (ns tadori.methods.address-checksum-test
   "Validation of eth-checksummed? — the EIP-55 checksum-PRESENCE detector in tadori's address
   parser, which had no test. It is honestly a presence check, NOT full verification: keccak-256
