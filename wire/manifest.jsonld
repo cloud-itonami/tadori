@@ -224,11 +224,11 @@
     },
     "crossActor": {
       "malak": "/60-apps/etzhayyim-project-recap/lg/kotodama/src/kotodama/malak/ (compute sibling — kotodama Pregel family, not a standalone actor dir; the wallet_deep_inspect_pursuit + address_label_pursuit Pregels are the ADR-2605152000 design; see also ADR-2605131600 / 2605172000)",
-      "ipaddress": "/20-actors/ipaddress/CLAUDE.md (1次 IP/WHOIS/GeoIP source — T2 migration target)",
-      "yabai": "/20-actors/yabai/CLAUDE.md (risk + enforcement-routing sink — T3 migration target)"
+      "ipaddress": "/20-actors/ipaddress/AGENTS.md (1次 IP/WHOIS/GeoIP source — T2 migration target)",
+      "yabai": "/20-actors/yabai/AGENTS.md (risk + enforcement-routing sink — T3 migration target)"
     },
     "self": {
-      "claude": "/20-actors/tadori/CLAUDE.md",
+      "claude": "/20-actors/tadori/AGENTS.md",
       "lexicons": "/00-contracts/lexicons/com/etzhayyim/tadori/"
     }
   }
